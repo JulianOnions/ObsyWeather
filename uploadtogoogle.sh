@@ -1,12 +1,18 @@
 #! /bin/sh
 # upload data and save it
 
+DEBUG=
+case "$1" in 
+	debug) DEBUG=echo;;
+esac
 set -xv
-cd /home/nas/ObsyWeather
+cd /home/nas/Documents/Code/Upload_code
 
-RAINDATA=/home/nas/RAIN_Guage/Final_Code/rainfall_data.txt
-WINDDATA=/home/nas/PZEM017modbus/modbus_data.txt
-SAVEDATA=/home/nas/WindRainData
+source bin/activate
+
+RAINDATA=/home/nas/Documents/Data/Rain/rainfall_data.txt
+WINDDATA=/home/nas/Documents/Modbus/modbus_data.txt
+SAVEDATA=/home/nas/Documents/Data/Upload_data
 
 # date stamp
 date=$(date +%Y-%m-%d-%H-%M-%S)
@@ -15,12 +21,17 @@ RAINSAVE=$SAVEDATA/Rain-$date.csv
 WINDSAVE=$SAVEDATA/Wind-$date.csv
 
 # move the files to a save directory
-mv $RAINDATA $RAINSAVE.P
-mv $WINDDATA $WINDSAVE.P
+$DEBUG mv $RAINDATA $RAINSAVE.P
+$DEBUG mv $WINDDATA $WINDSAVE.P
 # pause just in case of mid write
 sleep 2
 
-# now uplod these saved files
-python /home/nas/ObsyWeather/uploadrain.py $RAINSAVE.P && mv $RAINSAVE.P $RAINSAVE
-python /home/nas/ObsyWeather/uploadwind.py $WINDSAVE.P && mv $WINDSAVE.P $WINDSAVE
-
+# now upload these saved files
+if [ -f $RAINSAVE.P ]
+then
+$DEBUG python ./uploadrain.py $RAINSAVE.P && mv $RAINSAVE.P $RAINSAVE
+fi
+if [ -f $WINDSAVE.P ]
+then
+$DEBUG python ./uploadwind.py $WINDSAVE.P && mv $WINDSAVE.P $WINDSAVE
+fi

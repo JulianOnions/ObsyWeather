@@ -1,13 +1,19 @@
 #! /bin/bash
 
-SAVEDATA=/home/nas/WindRainData
+case "$1" in
+	debug) DEBUG=echo ;;
+esac
+SAVEDATA=/home/nas/Documents/Data/Upload_data
+
+cd /home/nas/Documents/Code/Upload_code
+source bin/activate
 
 for i in $SAVEDATA/Rain*.P
 do
 echo $i
 [ ! -f "$i" ] && continue
 b=$(echo $i | sed 's/\.P//' )
-python /home/nas/ObsyWeather/uploadrain.py $i && mv $i $b || exit 1
+$DEBUG python ./uploadrain.py $i && mv $i $b || exit 1
 done
 
 
@@ -16,6 +22,5 @@ do
 echo $i
 [ ! -f "$i" ] && continue
 b=$(echo $i | sed 's/\.P//' )
-python /home/nas/ObsyWeather/uploadwind.py $i && mv $i $b || exit 1
+$DEBUG python ./uploadwind.py $i && mv $i $b || exit 1
 done
-
